@@ -3,5 +3,5 @@
 if [ ! -d "venv" ]; then
     python -m venv venv
 fi
-venv/bin/pip install texttest
-venv/bin/texttest -d . -con "$@"
+venv/Scripts/pip install texttest
+venv/Scripts/texttest -d . -con "$@"
