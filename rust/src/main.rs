@@ -1,6 +1,20 @@
+#![feature(
+    strict_provenance_lints,
+    unqualified_local_imports,
+    must_not_suspend
+)]
+#![allow(
+    clippy::impl_trait_in_params,
+    clippy::missing_const_for_fn,
+    clippy::missing_docs_in_private_items,
+    missing_docs,
+    unreachable_pub,
+    reason = "Not dealing with these right now."
+)]
+
 mod gildedrose;
 
-use gildedrose::{GildedRose, Item};
+use crate::gildedrose::{GildedRose, Item};
 
 fn main() {
     let items = vec![
@@ -19,10 +33,10 @@ fn main() {
 
     println!("OMGHAI!");
     for i in 0..=30 {
-        println!("-------- day {} --------", i);
+        println!("-------- day {i} --------");
         println!("name, sellIn, quality");
         for item in &rose.items {
-            println!("{}", item);
+            println!("{item}");
         }
         println!();
         rose.update_quality();
