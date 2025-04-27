@@ -31,6 +31,8 @@ pub struct GildedRose {
 }
 
 impl GildedRose {
+    const STANDARD_DECAY_RATE: i32 = 1;
+
     pub fn new(items: Vec<Item>) -> Self {
         Self { items }
     }
@@ -60,7 +62,11 @@ impl GildedRose {
             "Backstage passes to a TAFKAL80ETC concert" => {
                 Self::set_quality(item, 0);
             }
-            _ => Self::decrease_quality(item, 1),
+            "Conjured Mana Cake" => Self::decrease_quality(
+                item,
+                Self::STANDARD_DECAY_RATE.saturating_mul(2),
+            ),
+            _ => Self::decrease_quality(item, Self::STANDARD_DECAY_RATE),
         }
     }
 
@@ -76,7 +82,11 @@ impl GildedRose {
                     };
                     Self::increase_quality(item, amount);
                 }
-                _ => Self::decrease_quality(item, 1),
+                "Conjured Mana Cake" => Self::decrease_quality(
+                    item,
+                    Self::STANDARD_DECAY_RATE.saturating_mul(2),
+                ),
+                _ => Self::decrease_quality(item, Self::STANDARD_DECAY_RATE),
             }
 
             item.sell_in = item.sell_in.saturating_sub(1);
@@ -221,5 +231,28 @@ mod tests {
         assert_eq!(ITEM_NAME, rose.items[0].name);
         assert_eq!(SELL_IN, rose.items[0].sell_in);
         assert_eq!(QUALITY, rose.items[0].quality);
+    }
+
+    #[test]
+    pub fn conjured_item() {
+        const ITEM_NAME: &str = "Conjured Mana Cake";
+        const GENERIC_ITEM_NAME: &str = "Baguette";
+        const SELL_IN: i32 = 1;
+        const QUALITY: i32 = 50;
+
+        let items: Vec<Item> = vec![
+            Item::new(ITEM_NAME, SELL_IN, QUALITY),
+            Item::new(GENERIC_ITEM_NAME, SELL_IN, QUALITY),
+        ];
+
+        let mut rose: GildedRose = GildedRose::new(items);
+        rose.update_quality();
+        let rose: GildedRose = rose;
+        assert_eq!(
+            QUALITY.saturating_sub(rose.items[0].quality),
+            QUALITY
+                .saturating_sub(rose.items[1].quality)
+                .saturating_mul(2)
+        );
     }
 }
